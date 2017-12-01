@@ -12,13 +12,23 @@
 
 namespace EPFL\Newsletter;
 
+if ( ! defined( 'ABSPATH' ) ) {
+    die( 'Access denied.' );
+}
+
 require_once(dirname(__FILE__) . "/inc/i18n.php");
+require_once(dirname(__FILE__) . "/inc/TheNewsletterPlugin.php");
+use \EPFL\Newsletter\TheNewsletterPlugin;
 
 class NewsletterConfig
 {
     static function hook ()
     {
-        add_action( 'admin_init', array(get_called_class(), 'require_the_newsletter_plugin' ));
+        add_action('admin_init', array(get_called_class(), 'require_the_newsletter_plugin' ));
+        if (TheNewsletterPlugin::get_state() === "OK") {
+            require_once(dirname(__FILE__) . "/inc/EPFLNewsletterTheme.php");
+            require_once(dirname(__FILE__) . "/inc/EPFLMailer.php");
+        }
     }
 
     /**
@@ -29,10 +39,12 @@ class NewsletterConfig
      */
     static function require_the_newsletter_plugin ()
     {
-        $the_newsletter_plugin = self::get_newsletter_plugin();
-        if (! $the_newsletter_plugin) {
+        $the_newsletter_plugin_state = TheNewsletterPlugin::get_state();
+        if ($the_newsletter_plugin_state === "OK") {
+            return;  // All good, skip corrective action below
+        } elseif ($the_newsletter_plugin_state === "UNAVAILABLE") {
             self::add_admin_notice('error_need_newsletter_plugin');
-        } elseif (! is_plugin_active($the_newsletter_plugin)) {
+        } elseif ($the_newsletter_plugin_state === "INACTIVE") {
             // Assumption #1: EPFL-newsletter is active (otherwise
             // this code wouldn't run)
             // Assumption #2: we just entered this illegal state
@@ -47,9 +59,9 @@ class NewsletterConfig
                 'notice_newsletter_plugin_deactivated_must_deactivate' :
                 'error_newsletter_plugin_deactivated_cannot_activate');
         } else {
-            return;  // All good
+            wp_die("Unknown state $the_newsletter_plugin_state of The Newsletter Plugin");
         }
-        // In all other cases:
+        // In all not-OK cases:
         deactivate_plugins( plugin_basename( __FILE__ ) ); 
         unset($_GET['activate']);  // No green success message
     }
@@ -101,5 +113,3 @@ class NewsletterConfig
 }
 
 NewsletterConfig::hook();
-
-?>
