@@ -25,7 +25,7 @@ class EPFLMailer
     function phpmailer ()
     {
         if (! $this->_phpmailer) {
-            $that = Newsletter::instance();
+            $that = \Newsletter::instance();
             $that->mailer_init();
             $this->_phpmailer = $that->mailer;
         }
