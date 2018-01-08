@@ -49,10 +49,17 @@ class EPFLMailer
         // this. Yet there is not a single grep hit for "msgHTML" in
         // the sources of that much-heralded, supposedly best-of-breed
         // newsletter plugin.
+        if (is_array($message)) {
+            $html_message = $message["html"];
+            $text_message = $message["text"];
+        } else {
+            $html_message = $message;
+            $text_message = $message;
+        }
         $phpmailer->msgHTML(
-            $this->massage_html($message["html"]),
+            $this->massage_html($html_message),
             ABSPATH,
-            function () use ($message) { return $message["text"]; }
+            function () use ($text_message) { return $text_message; }
         );
 
         $phpmailer->Send();
