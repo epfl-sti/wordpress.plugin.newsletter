@@ -242,7 +242,7 @@ class ImageCache {
             // channel here, #relesigh
             throw new ImageCacheException("Unable to decode: " . error_get_last());
         }
-        $ext = IMAGE_EXTS[$exif_image_type];
+        $ext = static::IMAGE_EXTS[$exif_image_type];
         if (! $ext) {
             throw new ImageCacheException("Unknown EXIF type: $exif_image_type");
         }
