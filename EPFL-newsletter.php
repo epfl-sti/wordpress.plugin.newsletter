@@ -16,8 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     die( 'Access denied.' );
 }
 
-require_once(dirname(__FILE__) . "/inc/i18n.php");
-require_once(dirname(__FILE__) . "/inc/TheNewsletterPlugin.php");
+require_once(__DIR__ . "/inc/i18n.php");
+require_once(__DIR__ . "/inc/TheNewsletterPlugin.php");
 use \EPFL\Newsletter\TheNewsletterPlugin;
 
 class NewsletterConfig
@@ -26,8 +26,8 @@ class NewsletterConfig
     {
         add_action('admin_init', array(get_called_class(), 'require_the_newsletter_plugin' ));
         if (TheNewsletterPlugin::get_state() === "OK") {
-            require_once(dirname(__FILE__) . "/inc/EPFLNewsletterTheme.php");
-            require_once(dirname(__FILE__) . "/inc/EPFLMailer.php");
+            require_once(__DIR__ . "/inc/EPFLNewsletterTheme.php");
+            require_once(__DIR__ . "/inc/EPFLMailer.php");
         }
     }
 
