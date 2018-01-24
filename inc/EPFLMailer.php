@@ -123,7 +123,11 @@ class EPFLMailer
          foreach ($doc->getElementsByTagName("img") as $img) {
              if ($img->getAttribute("height") == 1 &&
                  $img->getAttribute("width") == 1) {
-                 continue;  // Tracker pixel, ignore
+                 // Shoot the tracker pixel - For Gmail's sake we want
+                 // zero external images, so as to sidestep
+                 // https://github.com/epfl-sti/wordpress.plugin.newsletter/issues/2
+                 $img->parentNode->removeChild($img);
+                 continue;
              }
              $src = $img->getAttribute("src");
              if (preg_match("#^https?:#", $src)) {
