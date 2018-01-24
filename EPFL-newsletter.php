@@ -16,6 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     die( 'Access denied.' );
 }
 
+$composer_autoload_file = __DIR__ . '/vendor/autoload.php';
+if (file_exists($composer_autoload_file)) {
+    require_once $composer_autoload_file;
+}
+
 require_once(__DIR__ . "/inc/i18n.php");
 require_once(__DIR__ . "/inc/TheNewsletterPlugin.php");
 use \EPFL\Newsletter\TheNewsletterPlugin;

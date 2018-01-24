@@ -1,0 +1,6 @@
+{
+  "__comment_": "Composer is a 'soft dependency'. Steps are taken in the code to make life go on if it is not available.",
+  "require": {
+    "pelago/emogrifier": "2.0.0"
+  }
+}
