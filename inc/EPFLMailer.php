@@ -56,8 +56,10 @@ class EPFLMailer
             $html_message = $message;
             $text_message = $message;
         }
+        $html_message = $this->massage_html($html_message);
+        // file_put_contents("/tmp/message.html", $html_message);
         $phpmailer->msgHTML(
-            $this->massage_html($html_message),
+            $html_message,
             ABSPATH,
             function () use ($text_message) { return $text_message; }
         );
@@ -87,7 +89,8 @@ class EPFLMailer
 
     /**
      * Download all images, so that PHPMailer::msgHTML
-     * can embed them.
+     * can embed them.  Additionally, if emogrify is available
+     * from Composer, use it.
      */
     function massage_html ($html) {
         @file_put_contents(WP_CONTENT_DIR . "/newsletter.html", $html);  // XXX
@@ -115,7 +118,7 @@ class EPFLMailer
 
          @$doc->loadHTML($html);
          $base = get_home_url();
-         if (! preg_match('/\/$/', $base)) {
+         if (! preg_match('/\/$/', $base)) {   // ';  # emacswhatever
              $base = $base . "/";
          }
          // '; # ";  #emacswhatever
@@ -142,7 +145,23 @@ class EPFLMailer
                  }
              }
          }
-         return $doc->saveHTML();
+
+         $css_nodes = $doc->getElementsByTagName("style");
+         if (count($css_nodes) !== 1 ||
+             ! class_exists('\\Pelago\Emogrifier')) {
+             return $doc->saveHTML();
+         }
+
+         // Emogrify the HTML so as to bypass
+         // https://github.com/epfl-sti/wordpress.plugin.newsletter/issues/2
+         error_log("emogrifying!!1!");
+         $css_text = $doc->saveHTML($css_nodes[0]);
+         $css_nodes[0]->parentNode->removeChild($css_nodes[0]);
+         $html_text = $doc->saveHTML();
+         $emogrifier = new \Pelago\Emogrifier();
+         $emogrifier->setHtml($html_text);
+         $emogrifier->setCss($css_text);
+         return $emogrifier->emogrify();
     }
 }
 
