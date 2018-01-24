@@ -93,7 +93,6 @@ class EPFLMailer
      * from Composer, use it.
      */
     function massage_html ($html) {
-        @file_put_contents(WP_CONTENT_DIR . "/newsletter.html", $html);  // XXX
          $doc = new \DOMDocument();
 
          /* Unless told otherwise, DOMDocument::loadHTML() assumes
@@ -154,7 +153,6 @@ class EPFLMailer
 
          // Emogrify the HTML so as to bypass
          // https://github.com/epfl-sti/wordpress.plugin.newsletter/issues/2
-         error_log("emogrifying!!1!");
          $css_text = $doc->saveHTML($css_nodes[0]);
          $css_nodes[0]->parentNode->removeChild($css_nodes[0]);
          $html_text = $doc->saveHTML();
