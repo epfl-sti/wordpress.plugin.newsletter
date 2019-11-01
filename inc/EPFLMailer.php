@@ -146,7 +146,7 @@ class EPFLMailer
          }
 
          $css_nodes = $doc->getElementsByTagName("style");
-         if (count($css_nodes) !== 1 ||
+         if ($css_nodes->length !== 1 ||
              ! class_exists('\\Pelago\Emogrifier')) {
              return $doc->saveHTML();
          }
