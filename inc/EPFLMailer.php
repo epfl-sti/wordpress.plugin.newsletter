@@ -65,6 +65,7 @@ class EPFLMailer
         );
 
         $phpmailer->Send();
+        return true;
     }
 
     function flush() {
