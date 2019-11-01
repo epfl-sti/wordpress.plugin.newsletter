@@ -34,19 +34,18 @@ class EPFLMailer
      * @return A PHPMailer instance all configured from the relevant
      * settings in the newsletter plugin
      */
-    function phpmailer ()
+    private function _phpmailer ()
     {
-        if (! $this->_phpmailer) {
-            $that = \Newsletter::instance();
-            $that->mailer_init();
-            $this->_phpmailer = $that->mailer;
+        if (! @$this->_phpmailer) {
+            $smtp_mailer = new \NewsletterDefaultSMTPMailer(\Newsletter::instance()->get_options('smtp'));
+            $this->_phpmailer = $smtp_mailer->get_mailer();
         }
         return $this->_phpmailer;
     }
 
     function mail($to, $subject, $message, $headers = null, $enqueue = false)
     {
-        $phpmailer = $this->phpmailer();
+        $phpmailer = $this->_phpmailer();
         $phpmailer->ClearAddresses();      // $phpmailer might be re-used
         $phpmailer->AddAddress($to);
         $phpmailer->Subject = $subject;
@@ -58,9 +57,7 @@ class EPFLMailer
         // After the dust settles, doing the
         // multipart/{alternate,mixed} dance as best explained in
         // https://stackoverflow.com/a/3984262/435004 is as simple as
-        // this. Yet there is not a single grep hit for "msgHTML" in
-        // the sources of that much-heralded, supposedly best-of-breed
-        // newsletter plugin.
+        // this.
         if (is_array($message)) {
             $html_message = $message["html"];
             $text_message = $message["text"];
