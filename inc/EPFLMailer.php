@@ -4,6 +4,18 @@
  * A no-frills, yes-it-does-multipart implementation of the
  * ->register_mailer() entry point of the Newsletter plugin.
  *
+ * This class is implemented in terms of (the WordPress-provided
+ * version of) PHPMailer. PHPMailer auto-embeds images as MIME
+ * attachements, and references them using a "cid:" URL
+ * (https://stackoverflow.com/a/41994121/435004), which is what we want,
+ * provided the following conditions are met:
+ *
+ * - one must call ->msgHTML() to load the HTML payload, *which the
+ *   newsletter plug-in still doesn't do* as of version 6.3.5 of
+ *   late 2019;
+ * - PHPMailer only does so on relative <img src= > URLs, so we must
+ *   first preload all remote images (see @link ImageCache).
+ *
  * This file should only be require_once()'d after ensuring that The
  * Newsletter Plugin is loaded.
  */
